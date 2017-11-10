@@ -1,0 +1,25 @@
+{
+  "name": "tex-math2png-api",
+  "version": "0.0.1",
+  "description": "API that converts TeX math to PNG images",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Simsso/TeXMath2PNG-API.git"
+  },
+  "author": "Timo Denk (timodenk.com)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Simsso/TeXMath2PNG-API/issues"
+  },
+  "homepage": "https://github.com/Simsso/TeXMath2PNG-API#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "jimp": "^0.2.28",
+    "mathjax-node": "^1.2.1",
+    "svg2png": "^4.1.1"
+  }
+}
