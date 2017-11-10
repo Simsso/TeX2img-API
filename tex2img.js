@@ -3,12 +3,12 @@ module.exports = (() => {
     const svg2png = require('svg2png');
     const jimp = require('jimp');
 
-    const defaultOptions = { padding: 50 };
+    const defaultOptions = { padding: 50, format: 'png' };
 
     /**
-     * @param {string} tex The TeX math string, e.g. "a^2+b^2=c^2"
+     * @param {string} tex The TeX math string, e.g. 'a^2+b^2=c^2'
      * @param {Object} [options=defaultOptions]
-     * @param {function} callback Callback function with error and data parameter.
+     * @param {function} callback Callback function with parameters error, data, and mime text (e.g. 'image/jpeg')
      */
     function convert(tex, options, callback) {
         options = validateOptions(options);
@@ -19,7 +19,19 @@ module.exports = (() => {
             // Convert SVG to PNG
             // This is the time consuming step of the entire chain.
             svg2png(svg, formulaSize).then(buffer => {
-                addPadding(buffer, formulaSize, options.padding, callback)
+                addPadding(buffer, formulaSize, options.padding, (err, paddedImage) => {
+                    if (err) return callback(err);
+                    let mime = jimp.MIME_PNG, mimeText = 'image/png';
+                    if (['jpeg', 'jpg'].indexOf(options.format.toLowerCase()) !== -1) {
+                        mime = jimp.MIME_JPEG;
+                        mimeText = 'image/jpeg';
+                    }
+                    if (['bmp', 'bitmap'].indexOf(options.format.toLowerCase()) !== -1) {
+                        mime = jimp.MIME_BMP;
+                        mimeText = 'image/bmp';
+                    }
+                    paddedImage.getBuffer(mime, (err, buffer) => callback(err, buffer, mimeText));
+                })
             }).catch(callback);
         });
     }
@@ -30,12 +42,12 @@ module.exports = (() => {
             height: Math.floor(formulaSize.height + padding)
         }
         let background = new jimp(backgroundSize.width, backgroundSize.height, (err, background) => {
-            background.background(0xFFFFFFFF);
+            background.background(0xFFFFFFFF)
             jimp.read(buffer, (err, image) => {
                 // Print formula on top of the background image.
                 paddedImage = background.blit(image, Math.floor(padding / 2), Math.floor(padding / 2));
                 if (err) return callback(err);
-                paddedImage.getBuffer(jimp.MIME_PNG, callback);
+                callback(undefined, paddedImage)
             });
         });
     }
@@ -92,6 +104,11 @@ module.exports = (() => {
         }
         if (isNaN(options.padding) || options.padding < 0) {
             options.padding = defaultOptions.padding;
+        }
+
+        // format
+        if (typeof options.format !== 'string') {
+            options.format = defaultOptions.format;
         }
 
         return options;
