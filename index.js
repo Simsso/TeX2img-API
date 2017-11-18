@@ -35,5 +35,5 @@ app.get('/api/tex2img/:tex', (req, res) => {
     }
 })
 
-const port = 3002;
+const port = process.env.PORT || 3002;
 app.listen(port, 'localhost', () => console.log('API listening on port ' + port))

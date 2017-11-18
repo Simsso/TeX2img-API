@@ -4,8 +4,10 @@ module.exports = (() => {
     const jimp = require('jimp');
 
     const defaultOptions = { padding: 50, format: 'png' };
+    const maxPadding = 1000; // upper limit
 
     /**
+     * Converts a TeX math string into an image buffer.
      * @param {string} tex The TeX math string, e.g. 'a^2+b^2=c^2'
      * @param {Object} [options=defaultOptions]
      * @param {function} callback Callback function with parameters error, data, and mime text (e.g. 'image/jpeg')
@@ -36,6 +38,13 @@ module.exports = (() => {
         });
     }
 
+    /**
+     * Adds a white border (padding) to an image.
+     * @param {Object} buffer An image buffer object.
+     * @param {Object} formulaSize Height and width of the formula in pixels
+     * @param {number} padding Number of pixels that will be added to the image (padding).
+     * @param {function} callback Callback function with parameters (err, image). The latter is a jimp image object.
+     */
     function addPadding(buffer, formulaSize, padding, callback) {
         const backgroundSize = {
             width: Math.floor(formulaSize.width + padding),
@@ -104,6 +113,9 @@ module.exports = (() => {
         }
         if (isNaN(options.padding) || options.padding < 0) {
             options.padding = defaultOptions.padding;
+        }
+        if (options.padding > maxPadding) {
+            options.padding = maxPadding;
         }
 
         // format
