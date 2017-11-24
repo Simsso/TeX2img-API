@@ -8,7 +8,7 @@ const tex2svg = require('./tex2svg')
 app.get('/api/tex2img/:tex', (req, res) => {
     let tex = req.params.tex;
 
-    if (tex.length >= 1000) {
+    if (tex.length > 1000) {
         return res.status(414).send({ message: 'TeX code may not be longer than 1000 characters.' })
     }
 
@@ -35,5 +35,5 @@ app.get('/api/tex2img/:tex', (req, res) => {
     }
 })
 
-const port = process.env.PORT || 3002;
+const port = process.env.PORT || 3000;
 app.listen(port, 'localhost', () => console.log('API listening on port ' + port))
